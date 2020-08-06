@@ -251,7 +251,9 @@ void loop()
    hour = now.hour();         // break down time to hour
    minute = now.minute();     // break down time to minute
    sec = now.second();        // break down time to second
-   if (buttonState == HIGH){
+
+
+   if (buttonState == HIGH){  //button for 12 hour or 24 hour switch
     if (hour > 12){
       hour -=12;
    }else(hour == 0);
@@ -321,8 +323,8 @@ void loop()
     g_registerArray [3] = g_digits [g_numberToDisplay % 10];
   }
   
-  // Blink the LED on pin 13 every seconds
-  digitalWrite(ledPin,HIGH);
+  // Blink the LED on pin 13 every seconds  -- i added a secondary pin that was going to be used to identify AM/PM
+  digitalWrite(ledPin,HIGH);                  // ie: two blinking = PM , one blinking = AM
   digitalWrite(ledpinA, HIGH);
   delay(500);
   digitalWrite(ledPin,LOW);
