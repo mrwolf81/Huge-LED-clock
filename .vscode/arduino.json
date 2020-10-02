@@ -1,0 +1,5 @@
+{
+    "programmer": "USBtinyISP",
+    "board": "arduino:avr:uno",
+    "sketch": "clockMAIN.ino"
+}

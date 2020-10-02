@@ -13,5 +13,5 @@ I had made a few adjustments in the circuit design to make a clock much larger a
 
 sadly the clock is no longer in my possesion, so I am unable to use it as a guide to recall the complications and design modifications I made in order to get it to function correctly
 I have built a minature version is which I have been tinkering with.
-I would like to add buttons to input time/date corrections and change alarms. however I am terrible at coding and cannot quite figure out how to do it.
-the other addition would be a remote keypad to use as the input device, but i would rather figure out how and what Stanley's code is doing and how to add input functions first.
+However, I have used EEPROM to store the alarm functions and would rather use something that does not have a limited write cycle, any suggestions would be appreciated.
+I am looking at using a SD card reader to store alarm funtions and possibly alarm songs/tunes
