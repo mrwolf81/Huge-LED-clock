@@ -2,7 +2,7 @@
  Huge LED clock using Arduino
 
 This is an old project that took quite a long time to figure out and build.
-it is running two barebone Atmega328 chips with the Arduino bootloader
+it is running a barebone Atmega328 chip with the Arduino bootloader
 it makes use of Stanley Seow's project in the below link and Pauls 4 digit 7 segment shift register design
 
 http://arduino-for-beginners.blogspot.com/2010/12/digital-clock-with-7-segments-led-and.html
