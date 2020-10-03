@@ -101,7 +101,7 @@ void setup()
        pinMode(button2,INPUT_PULLUP);
        pinMode(button3,INPUT_PULLUP);
        pinMode(button4,INPUT_PULLUP);
-       pinMode(buzzer, OUTPUT);
+       pinMode(buzzer, OUTPUT);        //define buzzer as output
        
        Serial.begin(57600);           //optional, serial monitoring for debugging
        
@@ -142,8 +142,8 @@ void setup()
        g_digit2[8]=8+4+2; //backward large r
        g_digit2[9]=32+1+8+16; //F
        g_digit2[99]=0;
-       g_digit3[0]=1+16+32+64;
-       g_digit3[1]=8+1+16+2+64;
+       g_digit3[0]=1+16+32+64; //t
+       g_digit3[1]=8+1+16+2+64; //S
        g_digit3[2]=0;
        g_digit3[3]=0;
        g_digit3[4]=0;
@@ -680,18 +680,20 @@ void StoreAgg()
 {
     RTC.adjust(DateTime(yearupg,monthupg,dayupg,hourupg,minupg,0));
     delay(200);
-    g_registerArray[0]=g_digits[8];
-    g_registerArray[1]=g_digits[8];
-    g_registerArray[2]=g_digits[8];
-    g_registerArray[3]=g_digits[8];
-    sendSerialData(g_registers,g_registerArray);
-    delay(200);
-    g_registerArray[0]=g_digits[99];
-    g_registerArray[1]=g_digits[99];
-    g_registerArray[2]=g_digits[99];
-    g_registerArray[3]=g_digits[99];
-    sendSerialData(g_registers,g_registerArray);
-    delay(200);
+    for (int i=0;i<5;i++){
+      g_registerArray[0]=g_digits[8];
+      g_registerArray[1]=g_digits[8];
+      g_registerArray[2]=g_digits[8];
+      g_registerArray[3]=g_digits[8];
+      sendSerialData(g_registers,g_registerArray);
+      delay(100);
+      g_registerArray[0]=g_digits[99];
+      g_registerArray[1]=g_digits[99];
+      g_registerArray[2]=g_digits[99];
+      g_registerArray[3]=g_digits[99];
+      sendSerialData(g_registers,g_registerArray);
+      delay(100);
+}
 }
 void AlarmActive()
 {
@@ -711,7 +713,7 @@ void AlarmActive()
     }
  }
 }
-void DisplayAlarmTime()
+void DisplayAlarmTime()  //this is just to read/display the EEPROM write data
 {
  Ahourupg = EEPROM.read(0);
  Aminuteupg = EEPROM.read(1);
