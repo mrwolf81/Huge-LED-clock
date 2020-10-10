@@ -15,3 +15,5 @@ sadly the clock is no longer in my possesion, so I am unable to use it as a guid
 I have built a minature version is which I have been tinkering with.
 However, I have used EEPROM to store the alarm functions and would rather use something that does not have a limited write cycle, any suggestions would be appreciated.
 I am looking at using a SD card reader to store alarm funtions and possibly alarm songs/tunes
+
+@stanleyseow
