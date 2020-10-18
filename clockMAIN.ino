@@ -1,23 +1,23 @@
 //*warehouse clock menu test*//
-#include "DHT.h"
-#include <Wire.h>
-#include "RTClib.h"
-#include <EEPROM.h>
-#include "pitches.h"
-#include <anyrtttl.h>
-#include <binrtttl.h>
-#define DHT11_PIN A0
-#define DHTTYPE DHT11
-#define buzzer A2
+#include "DHT.h"  //DHT library 
+#include <Wire.h>  //i2c library
+#include "RTClib.h"  //RTC library
+#include <EEPROM.h> //EEPROM library
+#include "pitches.h"  //musical notes for tone playback
+#include <anyrtttl.h> //non-blocking tone library
+#include <binrtttl.h> //as above
+#define DHT11_PIN A0  //DHT pin number
+#define DHTTYPE DHT11 //DHT type
+#define buzzer A2 //tone playback speaker/buzzer
 //#define TIME_24_HOUR false
 
-DHT dht(DHT11_PIN, DHTTYPE);
+DHT dht(DHT11_PIN, DHTTYPE);  //defining DHT pin and type
 
 const int g_pinData=4; //slave input 74595
 const int g_pinLatch=3; //latch 74595
 const int g_pinClk=2; //clock 74595
 const int ledPinA=10; //semi column blink
-const int ledPinB=9;
+const int ledPinB=9; //second semi column blink
 const int ledPinC=A1; //am pm light
 const int button1=6; //set button
 const int button2=5; //plus button
@@ -38,8 +38,8 @@ const char * pinky = "PinkyAnd:d=16,o=5,b=45:32p,32c,f,32e,f,32g#,8e.,32c,f,32e,
 RTC_DS1307 RTC; //define RTC variables
 
 byte g_digits[10]; //definitions of the 7-bit values for displaying g_digits
-byte g_digit2[10];
-byte g_digit3[10];
+byte g_digit2[10]; //added secondary 7-bit values for displaying menu functions
+byte g_digit3[10]; //added third 7-bit values for more menu function info
 
 int g_numberToDisplay=0; //default number to display
 
@@ -49,8 +49,8 @@ byte g_registerArray[g_registers]; //array of numbers to pass to shift registers
 
 int hour,minute,sec,day,month,year,disp=0;
 
-unsigned long previousMillis = 0;
-const long interval = 1000;
+unsigned long previousMillis = 0; //used for tone playback
+const long interval = 1000; //used for tone playback
 
 //*******time date set variables**********//
 
@@ -205,17 +205,17 @@ void loop()
     day = now.day();            // break down date to day
     month = now.month();        // break down date to month
     year = now.year();          // break down date to year
-    alarm_hr = EEPROM.read(0);
-    alarm_min = EEPROM.read(1);
-    alarm_state = EEPROM.read(2);
+    alarm_hr = EEPROM.read(0);      //read alarm hour
+    alarm_min = EEPROM.read(1);     //read alarm minute
+    alarm_state = EEPROM.read(2);   //read alarm state on/off
     
-    if(now.hour() >= 12 && now.hour() <=23){
+    if(now.hour() >= 12 && now.hour() <=23){  //checks time in 24 hour and displays P or A for PM or AM (added function, not really needed)
       digitalWrite(ledPinC, LOW);
     }else
     if(now.hour() >= 0 && now.hour() <=11){
       digitalWrite(ledPinC, HIGH);
     }
-    if(now.hour() == alarm_hr && now.minute() == alarm_min && alarm_state == 1){
+    if(now.hour() == alarm_hr && now.minute() == alarm_min && alarm_state == 1){    //check alarm time against current time and activate if matching
       AlarmActive();
       }
       else{
@@ -224,7 +224,7 @@ void loop()
         }
       
 
-/*****new menu****/
+/*****menu display options****/
 if(digitalRead(button4))
 {
   DisplayDate();
@@ -317,6 +317,8 @@ void DisplayTemp()
   delay(200);
   int temp = dht.readTemperature();
   int humid = dht.readHumidity();
+
+    //push temperature to the four digits and display degree and "C" for celsius
   
     g_registerArray [0] = g_digits [temp / 10];
     g_registerArray [1] = g_digits [temp % 10];
@@ -326,6 +328,8 @@ void DisplayTemp()
     sendSerialData (g_registers, g_registerArray);
 
     delay(1000);
+
+      //push the humidity to the four digits and display "rh"
 
     g_registerArray[0]=g_digits[humid/10];
     g_registerArray[1]=g_digits[humid%10];
@@ -352,7 +356,7 @@ void DisplayTime()
     monthupg=month;
     yearupg=year;
     
-    if(now.hour() > 12){
+    if(now.hour() > 12){  //24hr to 12hr display change
       hour -= 12;
     }
     else
@@ -366,7 +370,7 @@ void DisplayTime()
     disp=(hour*100)+minute;
     g_numberToDisplay=disp;
 
-    // push the number to the four digits
+    // push the Time to the four digits
     if (g_numberToDisplay<10)
     {
         g_registerArray[0]=g_digits[0];
@@ -397,6 +401,9 @@ void DisplayTime()
                     }
                     sendSerialData(g_registers,g_registerArray);
                     delay(100);
+
+                      //function to display one blinking semi column for AM, two semi columns for PM
+
                       if(now.hour()>=12&&now.hour()<=23){
                         digitalWrite(ledPinA,HIGH);
                         digitalWrite(ledPinB,HIGH);
@@ -415,7 +422,7 @@ void DisplayTime()
                         }
 }
 
-void DisplaySetHour()
+void DisplaySetHour()   //menu display - setting the hour
 {
     if(digitalRead(button2)==HIGH)
     {
@@ -441,12 +448,12 @@ void DisplaySetHour()
     }
     g_registerArray[0]=g_digits[hourupg/10];
     g_registerArray[1]=g_digits[hourupg%10];
-    g_registerArray[2]=g_digit2[1];
-    g_registerArray[3]=g_digit2[6];
+    g_registerArray[2]=g_digit2[1]; //h
+    g_registerArray[3]=g_digit2[6]; //r
     sendSerialData(g_registers,g_registerArray);
     delay(200);
 }
-void DisplaySetMinute()
+void DisplaySetMinute()   //menu display - setting the minute
 {
     if(digitalRead(button2)==HIGH)
     {
@@ -470,14 +477,14 @@ void DisplaySetMinute()
             minupg=minupg-1;
         }
     }
-    g_registerArray[0]=g_digit2[0];
-    g_registerArray[1]=g_digit2[7];
+    g_registerArray[0]=g_digit2[0]; //n
+    g_registerArray[1]=g_digit2[7]; //backward r
     g_registerArray[2]=g_digits[minupg/10];
     g_registerArray[3]=g_digits[minupg%10];
     sendSerialData(g_registers,g_registerArray);
     delay(200);
 }
-void DisplaySetDay(){
+void DisplaySetDay(){       //menu display - setting the day
   if(digitalRead(button2)==HIGH)
   {
     if(dayupg==31){
@@ -496,12 +503,12 @@ void DisplaySetDay(){
               }
               g_registerArray[0]=g_digits[dayupg/10];
               g_registerArray[1]=g_digits[dayupg%10];
-              g_registerArray[2]=g_digit2[2];
-              g_registerArray[3]=g_digit2[4];
+              g_registerArray[2]=g_digit2[2];   //d
+              g_registerArray[3]=g_digit2[4];   //y
               sendSerialData(g_registers,g_registerArray);
               delay(200);
               }
-void DisplaySetMonth()
+void DisplaySetMonth()          //menu display - setting the month
 {
   if(digitalRead(button2)==HIGH)
   {
@@ -525,14 +532,14 @@ void DisplaySetMonth()
               monthupg=monthupg-1;
               }
               }
-              g_registerArray[0]=g_digit2[3];
-              g_registerArray[1]=g_digit2[8];
+              g_registerArray[0]=g_digit2[3]; //large n
+              g_registerArray[1]=g_digit2[8]; //backwards large r
               g_registerArray[2]=g_digits[monthupg/10];
               g_registerArray[3]=g_digits[monthupg%10];
               sendSerialData(g_registers,g_registerArray);
               delay(200);
               }
-void DisplaySetYear()
+void DisplaySetYear()       //menu display - setting the year
 { 
     if(digitalRead(button2)==HIGH)
     {
@@ -549,7 +556,7 @@ void DisplaySetYear()
     sendSerialData(g_registers,g_registerArray);
     delay(200);
 }
-void DisplaySetAlarmHr()
+void DisplaySetAlarmHr()      //menu display - setting the alarm hour
 {
   if(digitalRead(button2)==HIGH)
   {
@@ -575,12 +582,12 @@ void DisplaySetAlarmHr()
     }
     g_registerArray[0]=g_digits[Ahourupg/10];
     g_registerArray[1]=g_digits[Ahourupg%10];
-    g_registerArray[2]=g_digit2[1];
-    g_registerArray[3]=g_digit2[6];
+    g_registerArray[2]=g_digit2[1]; //h
+    g_registerArray[3]=g_digit2[6]; //r
     sendSerialData(g_registers,g_registerArray);
     delay(200);
 }
-void DisplaySetAlarmMin()
+void DisplaySetAlarmMin()       //menu display - setting the alarm minute
 {
   if(digitalRead(button2)==HIGH)
   {
@@ -604,14 +611,14 @@ void DisplaySetAlarmMin()
             Aminuteupg=Aminuteupg-1;
         }
     }
-    g_registerArray[0]=g_digit2[0];
-    g_registerArray[1]=g_digit2[7];
+    g_registerArray[0]=g_digit2[0]; //n
+    g_registerArray[1]=g_digit2[7]; //backwards r
     g_registerArray[2]=g_digits[Aminuteupg/10];
     g_registerArray[3]=g_digits[Aminuteupg%10];
     sendSerialData(g_registers,g_registerArray);
     delay(200);
 }
-void DisplayAlarmState()
+void DisplayAlarmState()      //menu display - setting the alarm state - on/off
 {
   if(digitalRead(button2)==HIGH)
   {
@@ -633,21 +640,21 @@ void DisplayAlarmState()
             if(Astate==1){
               g_registerArray[0]=g_digit2[5];
               g_registerArray[1]=g_digit2[99];
-              g_registerArray[2]=g_digits[0];
-              g_registerArray[3]=g_digit2[3];
+              g_registerArray[2]=g_digits[0]; //0
+              g_registerArray[3]=g_digit2[3]; //n
               sendSerialData(g_registers,g_registerArray);
               delay(200);
             }else
             if(Astate==0){
               g_registerArray[0] = g_digit2[5];
               g_registerArray[1] = g_digit2[99];
-              g_registerArray[2] = g_digits[0];
-              g_registerArray[3] = g_digit2[9];
+              g_registerArray[2] = g_digits[0]; //0
+              g_registerArray[3] = g_digit2[9]; //f
               sendSerialData(g_registers, g_registerArray);
               delay(200);
             }
 }
-void DisplayMelodySelect()
+void DisplayMelodySelect()    //menu display - setting the tone selection
 {
    if(digitalRead(button2)==HIGH)
   {
@@ -665,14 +672,14 @@ void DisplayMelodySelect()
             toneSelect = toneSelect-1;
             }
       }
-      g_registerArray[0]=g_digit3[0];
-      g_registerArray[1]=g_digit3[1];
+      g_registerArray[0]=g_digit3[0]; //t
+      g_registerArray[1]=g_digit3[1]; //s
       g_registerArray[2]=g_digits[toneSelect/10];
       g_registerArray[3]=g_digits[toneSelect%10];
       sendSerialData(g_registers,g_registerArray);
       delay(200);
 }
-void StoreAgg()
+void StoreAgg()   //writing update to RTC and writing changes to EEPROM
 {
     RTC.adjust(DateTime(yearupg,monthupg,dayupg,hourupg,minupg,0));
     delay(200);
@@ -706,7 +713,7 @@ void StoreAgg()
 }
 }
 
-void AlarmActive()
+void AlarmActive()    //if alarm active - play tone
 {
   if(EEPROM.read(3)==0){
     unsigned long currentMillis = millis();
