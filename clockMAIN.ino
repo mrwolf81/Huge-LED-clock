@@ -573,7 +573,6 @@ void DisplaySetAlarmHr()
             Ahourupg=Ahourupg-1;
         }
     }
-    EEPROM.write(0,Ahourupg);
     g_registerArray[0]=g_digits[Ahourupg/10];
     g_registerArray[1]=g_digits[Ahourupg%10];
     g_registerArray[2]=g_digit2[1];
@@ -605,7 +604,6 @@ void DisplaySetAlarmMin()
             Aminuteupg=Aminuteupg-1;
         }
     }
-    EEPROM.write(1,Aminuteupg);
     g_registerArray[0]=g_digit2[0];
     g_registerArray[1]=g_digit2[7];
     g_registerArray[2]=g_digits[Aminuteupg/10];
@@ -631,7 +629,6 @@ void DisplayAlarmState()
             Astateupg = Astateupg-1;
             }
             }
-            EEPROM.write(2,Astateupg);
             Astate=Astateupg;
             if(Astate==1){
               g_registerArray[0]=g_digit2[5];
@@ -667,19 +664,32 @@ void DisplayMelodySelect()
           }else{
             toneSelect = toneSelect-1;
             }
-            }
-            EEPROM.write(3,toneSelect);
-              g_registerArray[0]=g_digit3[0];
-              g_registerArray[1]=g_digit3[1];
-              g_registerArray[2]=g_digits[toneSelect/10];
-              g_registerArray[3]=g_digits[toneSelect%10];
-              sendSerialData(g_registers,g_registerArray);
-              delay(200);
+      }
+      g_registerArray[0]=g_digit3[0];
+      g_registerArray[1]=g_digit3[1];
+      g_registerArray[2]=g_digits[toneSelect/10];
+      g_registerArray[3]=g_digits[toneSelect%10];
+      sendSerialData(g_registers,g_registerArray);
+      delay(200);
 }
 void StoreAgg()
 {
     RTC.adjust(DateTime(yearupg,monthupg,dayupg,hourupg,minupg,0));
     delay(200);
+    {
+      if(EEPROM.read(0) != Ahourupg){
+        EEPROM.write(0,Ahourupg);
+      }
+      if(EEPROM.read(1) != Aminuteupg){
+        EEPROM.write(1,Aminuteupg);
+      }
+      if(EEPROM.read(2) != Astateupg){
+        EEPROM.write(2,Astateupg);
+      }
+      if(EEPROM.read(3) != toneSelect){
+        EEPROM.write(3,toneSelect);
+      }
+    }
     for (int i=0;i<5;i++){
       g_registerArray[0]=g_digits[8];
       g_registerArray[1]=g_digits[8];
@@ -695,6 +705,7 @@ void StoreAgg()
       delay(100);
 }
 }
+
 void AlarmActive()
 {
   if(EEPROM.read(3)==0){
