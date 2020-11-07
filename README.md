@@ -1,4 +1,4 @@
-# Huge-LED-Clock
+# Huge LED Clock
  Huge Seven Segment LED clock using Arduino
 
 This is an old project that took quite a long time to figure out and build.
