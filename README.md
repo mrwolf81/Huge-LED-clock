@@ -1,5 +1,4 @@
 # Huge LED Clock
- Huge LED clock using Arduino
 
 This is an old project that took quite a long time to figure out and build.
 it is running a barebone Atmega328 chip with the Arduino bootloader
