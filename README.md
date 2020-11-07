@@ -1,4 +1,4 @@
-# Huge-LED-Clock
+# Huge LED Clock
  Huge LED clock using Arduino
 
 This is an old project that took quite a long time to figure out and build.
@@ -14,6 +14,8 @@ I had made a few adjustments in the circuit design to make a clock much larger a
 sadly the clock is no longer in my possesion, so I am unable to use it as a guide to recall the complications and design modifications I made in order to get it to function correctly
 I have built a minature version is which I have been tinkering with.
 However, I have used EEPROM to store the alarm functions and would rather use something that does not have a limited write cycle, any suggestions would be appreciated.
-I am looking at using a SD card reader to store alarm funtions and possibly alarm songs/tunes
+
+i have come across an issue with the alarm tones playing slow while in loop, and then speeding up to the correct bpm while in "menu".
+any help on this would be appreciated
 
 @stanleyseow
