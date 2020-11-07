@@ -562,22 +562,22 @@ void DisplaySetAlarmHr()      //menu display - setting the alarm hour
   {
     if(Ahourupg==23)
         {
-            Ahourupg=0;
+          Ahourupg=0;
         }
         else
         {
-            Ahourupg=Ahourupg+1;
+          Ahourupg=Ahourupg+1;
         }
     }
     if(digitalRead(button3)==HIGH)
     {
         if(Ahourupg==0)
         {
-            Ahourupg=23;
+          Ahourupg=23;
         }
         else
         {
-            Ahourupg=Ahourupg-1;
+          Ahourupg=Ahourupg-1;
         }
     }
     g_registerArray[0]=g_digits[Ahourupg/10];
@@ -715,11 +715,17 @@ void StoreAgg()   //writing update to RTC and writing changes to EEPROM
 
 void AlarmActive()    //if alarm active - play tone
 {
-  if(EEPROM.read(3)==0){
-    unsigned long currentMillis = millis();
-    if(currentMillis - previousMillis >= interval)
-    {
-      anyrtttl::nonblocking::begin(buzzer, pinky);
+  unsigned long currentMillis = millis();
+  if(currentMillis - previousMillis >= interval)
+  {
+    if(EEPROM.read(3)==0){
+      anyrtttl::nonblocking::begin(buzzer, mario);
+    }else if(EEPROM.read(3)==1){
+      anyrtttl::nonblocking::begin(buzzer, wonder);
+      }
+      else if(EEPROM.read(3)==2){
+        anyrtttl::nonblocking::begin(buzzer, starwars);
+      }
       if(currentMillis - previousMillis >= 2*interval)
       {
         previousMillis = currentMillis;
@@ -729,7 +735,6 @@ void AlarmActive()    //if alarm active - play tone
     {
       anyrtttl::nonblocking::stop();
     }
- }
 }
 void DisplayAlarmTime()  //this is just to read/display the EEPROM write data
 {
