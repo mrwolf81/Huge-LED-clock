@@ -735,7 +735,7 @@ void StoreAgg()   //writing update to RTC and writing changes to EEPROM
 }
 }
 
-void AlarmActive()    //if alarm active - play tone
+void AlarmActive()    //if alarm active - play tone     --CURRENTLY PLAYING TOO SLOW WHILE IN LOOP
 {
   if(EEPROM.read(3)==0){
     anyrtttl::blocking::play(buzzer,mash);
