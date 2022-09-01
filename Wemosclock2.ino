@@ -4,34 +4,22 @@
 #include <WiFiUdp.h>
 #include <Wire.h>
 #include <DHT.h>
-#include <DHT_U.h>
-#include <Adafruit_sensor.h>
 
 #define DHTPIN D5
 #define DHTTYPE DHT11
 
-DHT_Unified dht(DHTPIN, DHTTYPE);
-uint32_t delayMS;
+DHT dht(DHTPIN, DHTTYPE);  //DHT_Unified
 
 const char ssid[] = "Chall WH EXT";  //  your network SSID (name)
 const char pass[] = "Challenge123";       // your network password
 
 // NTP Servers:
 static const char ntpServerName[] = "ntp.cs.mu.OZ.AU";
-//static const char ntpServerName[] = "time.nist.gov";
-//static const char ntpServerName[] = "time-a.timefreq.bldrdoc.gov";
-//static const char ntpServerName[] = "time-b.timefreq.bldrdoc.gov";
-//static const char ntpServerName[] = "time-c.timefreq.bldrdoc.gov";
 
-const int timeZone = +10;     // Central European Time
-//const int timeZone = -5;  // Eastern Standard Time (USA)
-//const int timeZone = -4;  // Eastern Daylight Time (USA)
-//const int timeZone = -8;  // Pacific Standard Time (USA)
-//const int timeZone = -7;  // Pacific Daylight Time (USA)
-
+const int timeZone = +10;
 
 WiFiUDP Udp;
-unsigned int localPort = 8888;  // local port to listen for UDP packets
+unsigned int localPort = 8888;
 
 time_t getNtpTime();
 void digitalClockDisplay();
@@ -62,10 +50,6 @@ void setup()
   Serial.println(ssid);
   WiFi.begin(ssid, pass);
   dht.begin();
-  sensor_t sensor;
-  dht.temperature().getSensor(&sensor);
-  dht.humidity().getSensor(&sensor);
-  delayMS = sensor.min_delay / 1000;
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -149,34 +133,12 @@ void sendSerialData (byte registerCount, byte *pValueArray) {
 }
 
 
-void loop()
-{
-  delay(delayMS);
-  sensors_event_t event;
-  dht.temperature().getEvent(&event);
-  if(isnan(event.temperature)){
-    Serial.println(F("error reading temperature!"));
-  }
-  else{
-    Serial.print(F("Temperature: "));
-    Serial.print(event.temperature);
-    Serial.println(F("°C"));
-  }/*
-  dht.humidity().getEvent(&event);
-  if(isnan(event.relative_humidity)){
-    Serial.println(F("Error reading humidity!"));
-  }
-  else{
-    Serial.print(F("Humidity: "));
-    Serial.print(event.relative_humidity);
-    Serial.println(F("%"));
-  }*/
-
-   
+void loop(){
+  
   if (timeStatus() != timeNotSet) {
     if (now() != prevDisplay) { //update the display only if time has changed
       prevDisplay = now();
-      if ((second() == 20) || (second() == 21)){
+      if ((second() == 20) || (second() == 21) || (second() == 22)){
         digitalDateDisplay();
       }else{
       digitalClockDisplay();
@@ -185,12 +147,12 @@ void loop()
         digitalTempDisplay();
       }else{
         digitalClockDisplay();
-      }/*
+      }
       if((second() == 45) || (second() == 46)){
         digitalHumidDisplay();
       }else{
         digitalClockDisplay();
-      }*/
+      }
     }
   }
 }
@@ -264,9 +226,7 @@ void digitalTempDisplay(){
   Serial.print(temp);
   Serial.println();
   
-  sensors_event_t event;
-  dht.temperature().getEvent(&event);
-  temp = event.temperature;
+  temp = dht.readTemperature();
   
   g_registerArray [0] = g_digits [temp / 10];
   g_registerArray [1] = g_digits [temp % 10];
@@ -282,14 +242,13 @@ void digitalTempDisplay(){
   digitalWrite(dot2, LOW);
   delay(500);
 }
-/*
+
 void digitalHumidDisplay(){
+  
   Serial.print(humid);
   Serial.println();
-  
-  sensors_event_t event;
-  dht.humidity().getEvent(&event);
-  humid = event.relative_humidity;
+
+  humid = dht.readHumidity();
   
   g_registerArray [0] = g_digits [humid / 10];
   g_registerArray [1] = g_digits [humid % 10];
@@ -304,7 +263,7 @@ void digitalHumidDisplay(){
   digitalWrite(dot1, LOW);
   digitalWrite(dot2, LOW);
   delay(500);
-}*/
+}
 
 void printDigits(int digits)
 {
