@@ -10,8 +10,8 @@
 
 DHT dht(DHTPIN, DHTTYPE);  //DHT_Unified
 
-const char ssid[] = "Chall WH EXT";  //  your network SSID (name)
-const char pass[] = "Challenge123";       // your network password
+const char ssid[] = "";  //  your network SSID (name)
+const char pass[] = "";       // your network password
 
 // NTP Servers:
 static const char ntpServerName[] = "ntp.cs.mu.OZ.AU";
